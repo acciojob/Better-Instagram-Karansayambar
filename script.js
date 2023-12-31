@@ -1,4 +1,3 @@
-//your code here
 let draggedElement = null;
 
     document.addEventListener('dragstart', function (event) {
@@ -14,7 +13,13 @@ let draggedElement = null;
       event.preventDefault();
       if (event.target.classList.contains('image')) {
         const droppedElement = event.target;
+        const tempHTML = draggedElement.innerHTML;
         draggedElement.innerHTML = droppedElement.innerHTML;
-        droppedElement.innerHTML = event.dataTransfer.getData('text/html');
+        droppedElement.innerHTML = tempHTML;
+
+        // Swap background images
+        const tempImage = draggedElement.style.backgroundImage;
+        draggedElement.style.backgroundImage = droppedElement.style.backgroundImage;
+        droppedElement.style.backgroundImage = tempImage;
       }
     });
