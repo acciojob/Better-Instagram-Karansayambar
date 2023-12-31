@@ -1,25 +1,41 @@
 let draggedElement = null;
 
-    document.addEventListener('dragstart', function (event) {
+    function allowDrop(event) {
+      event.preventDefault();
+      const draggedOverElement = document.elementFromPoint(event.clientX, event.clientY);
+      if (draggedOverElement.classList.contains('image')) {
+        draggedOverElement.classList.add('dragging');
+      }
+    }
+
+    function dragStart(event) {
       draggedElement = event.target;
       event.dataTransfer.setData('text/html', draggedElement.innerHTML);
-    });
+    }
 
-    document.addEventListener('dragover', function (event) {
+    function dragEnd() {
+      const draggingElements = document.querySelectorAll('.dragging');
+      draggingElements.forEach(element => element.classList.remove('dragging'));
+    }
+
+    function drop(event) {
       event.preventDefault();
-    });
 
-    document.addEventListener('drop', function (event) {
-      event.preventDefault();
-      if (event.target.classList.contains('image')) {
-        const droppedElement = event.target;
-        const tempHTML = draggedElement.innerHTML;
-        draggedElement.innerHTML = droppedElement.innerHTML;
-        droppedElement.innerHTML = tempHTML;
+      const draggedOverElement = document.elementFromPoint(event.clientX, event.clientY);
 
-        // Swap background images
-        const tempImage = draggedElement.style.backgroundImage;
-        draggedElement.style.backgroundImage = droppedElement.style.backgroundImage;
-        droppedElement.style.backgroundImage = tempImage;
+      if (draggedOverElement.classList.contains('image')) {
+        draggedElement.innerHTML = draggedOverElement.innerHTML;
+        draggedOverElement.innerHTML = event.dataTransfer.getData('text/html');
       }
+
+      dragEnd();
+    }
+
+    const images = document.querySelectorAll('.image');
+    images.forEach(image => {
+      image.addEventListener('dragstart', dragStart);
+      image.addEventListener('dragend', dragEnd);
     });
+
+    document.addEventListener('dragover', allowDrop);
+    document.addEventListener('drop', drop);
