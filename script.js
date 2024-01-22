@@ -1,41 +1,24 @@
-let draggedElement = null;
+let dragged;
 
-    function allowDrop(event) {
-      event.preventDefault();
-      const draggedOverElement = document.elementFromPoint(event.clientX, event.clientY);
-      if (draggedOverElement.classList.contains('image')) {
-        draggedOverElement.classList.add('dragging');
-      }
+document.addEventListener("drag", function (event) {
+    // store a reference to the dragged element
+    dragged = event.target;
+});
+
+document.addEventListener("dragover", function (event) {
+    // prevent default to allow drop
+    event.preventDefault();
+});
+
+document.addEventListener("drop", function (event) {
+    // prevent default action (open as link for some elements)
+    event.preventDefault();
+
+    // if the element is a draggable div, swap the positions
+    if (event.target.classList.contains("draggable")) {
+        // swap background images
+        const temp = dragged.style.backgroundImage;
+        dragged.style.backgroundImage = event.target.style.backgroundImage;
+        event.target.style.backgroundImage = temp;
     }
-
-    function dragStart(event) {
-      draggedElement = event.target;
-      event.dataTransfer.setData('text/html', draggedElement.innerHTML);
-    }
-
-    function dragEnd() {
-      const draggingElements = document.querySelectorAll('.dragging');
-      draggingElements.forEach(element => element.classList.remove('dragging'));
-    }
-
-    function drop(event) {
-      event.preventDefault();
-
-      const draggedOverElement = document.elementFromPoint(event.clientX, event.clientY);
-
-      if (draggedOverElement.classList.contains('image')) {
-        draggedElement.innerHTML = draggedOverElement.innerHTML;
-        draggedOverElement.innerHTML = event.dataTransfer.getData('text/html');
-      }
-
-      dragEnd();
-    }
-
-    const images = document.querySelectorAll('.image');
-    images.forEach(image => {
-      image.addEventListener('dragstart', dragStart);
-      image.addEventListener('dragend', dragEnd);
-    });
-
-    document.addEventListener('dragover', allowDrop);
-    document.addEventListener('drop', drop);
+});
