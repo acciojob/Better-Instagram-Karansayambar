@@ -1,24 +1,24 @@
-let dragged;
+ let draggedElement;
+    document.addEventListener("dragstart", function (e) {
+        draggedElement = e.target;
+        e.dataTransfer.setDragImage(document.createElement("div"), 0, 0);
+    });
 
-document.addEventListener("drag", function (event) {
-    // store a reference to the dragged element
-    dragged = event.target;
-});
+    document.addEventListener("dragover", function (e) {
+        e.preventDefault();
+    });
 
-document.addEventListener("dragover", function (event) {
-    // prevent default to allow drop
-    event.preventDefault();
-});
+    document.addEventListener("drop", function (e) {
+        e.preventDefault();
 
-document.addEventListener("drop", function (event) {
-    // prevent default action (open as link for some elements)
-    event.preventDefault();
+        const dropTarget = e.target.closest(".image");
 
-    // if the element is a draggable div, swap the positions
-    if (event.target.classList.contains("draggable")) {
-        // swap background images
-        const temp = dragged.style.backgroundImage;
-        dragged.style.backgroundImage = event.target.style.backgroundImage;
-        event.target.style.backgroundImage = temp;
-    }
-});
+        if (dropTarget && dropTarget !== draggedElement) {
+            const temp = draggedElement.innerHTML;
+			const background = draggedElement.style.backgroundImage;
+            draggedElement.innerHTML = dropTarget.innerHTML;
+            dropTarget.innerHTML = temp;
+			draggedElement.style.backgroundImage = dropTarget.style.backgroundImage;
+			dropTarget.style.backgroundImage = background;
+        }
+    });
